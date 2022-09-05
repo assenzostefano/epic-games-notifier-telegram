@@ -38,16 +38,22 @@ def comingsoon(message):
     future_games_startdate1 = response['nextGames'][0]['promotions']['upcomingPromotionalOffers'][0]['promotionalOffers'][0]['startDate']
     future_games_price1 = response['nextGames'][0]['price']['totalPrice']['fmtPrice']['originalPrice']
 
-    image_futuregames2 = response['nextGames'][0]['keyImages'][1]['url'] # Second image future games
+    image_futuregames2 = response['nextGames'][1]['keyImages'][1]['url'] # Second image future games
     future_games2 = response['nextGames'][1]['title'] # Second title future games
     future_games_description2 = response['nextGames'][1]['description'] # Second description future games
+    future_games_startdate2 = response['nextGames'][1]['promotions']['upcomingPromotionalOffers'][0]['promotionalOffers'][0]['startDate']
+    future_games_price2 = response['nextGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice']
 
     #image_futuregames3 = response['nextGames'][0]['keyImages'][2]['url'] # Third image future games
     #future_games3 = response['nextGames'][2]['title'] # Third title future games
     #future_games_description3 = response['nextGames'][2]['description'] # Third description future games
 
+    #Send notification to user
     title_description_1 = future_games1 + "\n\n<b>About:</b>\n" + future_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + future_games_startdate1 + "\n" + "\n<b>Price:</b>\n" + future_games_price1 + " → " + "Free" # Send title, description, start date and price first future game
     img_1 = bot.send_photo(message.chat.id, image_futuregames1) # Send image first future games
     send_message = bot.send_message(chat_id, title_description_1, parse_mode="HTML") # Send all
 
+    title_description_2 = future_games2 + "\n\n<b>About:</b>\n" + future_games_description2 + "\n" + "\n<b>Start Date:</b>\n" + future_games_startdate2 + "\n" + "\n<b>Price:</b>\n" + future_games_price2 + " → " + "Free" # Send title, description, start date and price second future game
+    img_2 = bot.send_photo(message.chat.id, image_futuregames2) # Send image second future games
+    send_message = bot.send_message(chat_id, title_description_2, parse_mode="HTML") # Send all
 bot.polling()
