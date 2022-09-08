@@ -11,13 +11,13 @@ from dotenv import load_dotenv
 import requests
 #Libraries for send message at a certain moment
 import schedule
-
+#Libraries for connect to Mongodb
 import urllib
-
+#Libraries for connect to Mongodb
 import pymongo
-
+#Libraries for search collection by Id
 from bson.objectid import ObjectId
-
+#Libraries for research game on db
 import time
 
 load_dotenv()
