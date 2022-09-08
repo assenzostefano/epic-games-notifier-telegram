@@ -3,16 +3,31 @@ import telebot
 from telebot import types, telebot
 #Libraries for logging on console
 import logging
-#
+#Libraries for get BOT_TOKEN
 import os
-
+#Boh
 from dotenv import load_dotenv
 #Libraries for use API
 import requests
+#Libraries for send message at a certain moment
+import schedule
+
+import urllib
+
+import pymongo
+
+from bson.objectid import ObjectId
+
+import time
 
 load_dotenv()
 API_TOKEN = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(API_TOKEN)
+
+mongo_url = "mongodb+srv://stefano:" + urllib.parse.quote_plus("") + ""
+client = pymongo.MongoClient(mongo_url)
+database = client[""]
+collection = database[""]
 
 logging.info("The bot started successfully.")
 
@@ -106,5 +121,83 @@ def freenow(message):
         send_message = bot.send_message(chat_id, title_description_3, parse_mode="HTML") # Send all    
     except IndexError:
         print("No third game")
+
+#Command /subscribe
+@bot.message_handler(commands=['subscribe'])
+def subscribe(message):
+    #Register the user
+    global chat_id
+    chat_id = message.chat.id
+    send_message = bot.send_message(chat_id, "✅ You have been successfully subscribed to Epic Games Store Free Games notifications!")
+    #Get the ids of all users who write /subscribe
+    take_id = message.from_user.id
+    with open('readme.txt', 'a+') as f:
+        f.write(str(take_id))
+        f.writelines('\n')
+        a()
+
+def recheck_game():
+    time.sleep(10)
+    a()
+
+#Function for send every week the notification
+def a():
+    #Read all id on readme.txt
+    #schedule.every().thursday.do(freenow)
+    schedule.every(10).seconds.do(freenow)
+    with open("readme.txt",'r') as data_file:
+        for line in data_file:
+            data = line.split()
+            #print(data)
+    
+    #Check for new games
+    url = "https://api.plenusbot.xyz/epic_games?country=IT"
+    response = requests.get(url).json()
+
+    # Title of current games
+    current_games_title1 = response['currentGames'][0]['title']
+    current_games_title2 = response['currentGames'][1]['title']
+
+    #Check first game
+    search_game1 = collection.find_one({"Game 1" : current_games_title1})
+    if search_game1 is None:
+        #Send notification if title game is changed
+        print("Now I'm sending the notification to everyone.")
+        send_automatically1()
+    else:
+        #If new game is changed recheck every 10 second
+        print("The game is not changed")
+        recheck_game()
+
+
+def send_automatically1():
+    #Connect to the api
+    url = "https://api.plenusbot.xyz/epic_games?country=IT"
+    response = requests.get(url).json()
+
+    #All information for first game
+    current_games_title1 = response['currentGames'][0]['title'] # First title current games
+    current_games_description1 = response['currentGames'][0]['description'] # First description current games
+    current_games_startdate1 = response['currentGames'][0]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'] # Public release first game
+    current_games_endate1 = response['currentGames'][0]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release first game
+    current_games_price1 = response['currentGames'][0]['price']['totalPrice']['fmtPrice']['originalPrice']
+    current_games_images1 = response['currentGames'][0]['keyImages'][0]['url'] # First image current games
+
+    #All information for second game
+    current_games_title2 = response['currentGames'][1]['title'] # Second title current game
+    current_games_images2 = response['currentGames'][1]['keyImages'][0]['url'] # Second image current game
+    current_games_description2 = response['currentGames'][1]['description'] # Second description current game
+    current_games_startdate2 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'] #Public release second game
+    current_games_endate2 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release second game
+    current_games_price2 = response['currentGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice'] # Original price second game
+
+    #Send first and second message when the free game title change
+    title_description_1 = current_games_title1 + "\n\n<b>About:</b>\n" + current_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate1 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate1 + "\n" + "\n<b>Price:</b>\n" + current_games_price1 + " → " + "Free" # Send title, description, start date and price first current game
+    img_1 = bot.send_photo(chat_id, current_games_images1) # Send image first current games
+    send_message = bot.send_message(chat_id, title_description_1, parse_mode="HTML") # Send all
+
+    #Update Collection with new game
+    send_game1 = {"Game 1": current_games_title1}
+    senddata = collection.update_one({'_id':ObjectId("6319beba54b4d66a40e2d3eb")}, {"$set": send_game1}, upsert=False)
 
 bot.polling()
