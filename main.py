@@ -1,6 +1,6 @@
 #Libraries for Telegram bot
 import telebot
-from telebot import types, telebot
+from telebot import telebot
 #Libraries for logging on console
 import logging
 #Libraries for get BOT_TOKEN
@@ -32,12 +32,14 @@ logging.basicConfig(
 )
 load_dotenv()
 API_TOKEN = os.getenv('BOT_TOKEN')
+PASSWORD_MONGO = os.getenv('PASSWORD_MONGODB')
+URL_MONGO = os.getenv('URL_MONGODB')
 bot = telebot.TeleBot(API_TOKEN)
 
-mongo_url = "mongodb+srv://stefano:" + urllib.parse.quote_plus("") + ""
+mongo_url = "mongodb+srv://stefano:" + urllib.parse.quote_plus(PASSWORD_MONGO) + URL_MONGO
 client = pymongo.MongoClient(mongo_url)
-database = client[""]
-collection = database[""]
+database = client["personal"]
+collection = database["epicgames-telegram"]
 
 logging.info("The bot started successfully.")
 
@@ -144,7 +146,7 @@ def subscribe(message):
     send_message = bot.send_message(chat_id, "✅ You have been successfully subscribed to Epic Games Store Free Games notifications!")
     #Get the ids of all users who write /subscribe
     take_id = message.from_user.id
-    with open('readme.txt', 'w') as f:
+    with open('/app/data/readme.txt', 'w') as f:
         f.write(str(take_id))
         f.writelines('\n')
     a()
@@ -204,7 +206,7 @@ def send_automatically1():
     current_games_endate2 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release second game
     current_games_price2 = response['currentGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice'] # Original price second game
 
-    with open('readme.txt', 'r') as f:
+    with open('/app/data/readme.txt', 'r') as f:
         for line in f:
             y = line.split()
             a = (', '.join(y))
@@ -219,10 +221,10 @@ def send_automatically1():
 
     #Update Collection with new game
     send_game1 = {"Game 1": current_games_title1}
-    senddata = collection.update_one({'_id':ObjectId("")}, {"$set": send_game1}, upsert=False)
+    senddata = collection.update_one({'_id':ObjectId("6319beba54b4d66a40e2d3eb")}, {"$set": send_game1}, upsert=False)
 
     send_game2 = {"Game 2": current_games_title2}
-    senddata = collection.update_one({'_id':ObjectId("")}, {"$set": send_game2}, upsert=False)
+    senddata = collection.update_one({'_id':ObjectId("6319c0ac2ffd38ae32cd9ffa")}, {"$set": send_game2}, upsert=False)
 
     recheck_game()
 
