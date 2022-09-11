@@ -19,7 +19,17 @@ import pymongo
 from bson.objectid import ObjectId
 #Libraries for research game on db
 import time
+#Boh
+import sys
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("debug.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 load_dotenv()
 API_TOKEN = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(API_TOKEN)
@@ -42,6 +52,7 @@ def start_command(message):
 #Command /comingsoon
 @bot.message_handler(commands=['comingsoon'])
 def comingsoon(message):
+    logging.info("Triggered command COMING SOON.")
     chat_id = message.chat.id
     logging.info("Triggered command COMING SOON")
     url = "https://api.plenusbot.xyz/epic_games?country=IT"
@@ -83,6 +94,7 @@ def comingsoon(message):
 #Command /freenow
 @bot.message_handler(commands=['freenow'])
 def freenow(message):
+    logging.info("Triggered command FREENOW.")
     chat_id = message.chat.id
     url = "https://api.plenusbot.xyz/epic_games?country=IT"
     response = requests.get(url).json()
@@ -125,23 +137,26 @@ def freenow(message):
 #Command /subscribe
 @bot.message_handler(commands=['subscribe'])
 def subscribe(message):
+    logging.info("Triggered command SUBSCRIBE.")
     #Register the user
     global chat_id
     chat_id = message.chat.id
     send_message = bot.send_message(chat_id, "✅ You have been successfully subscribed to Epic Games Store Free Games notifications!")
     #Get the ids of all users who write /subscribe
     take_id = message.from_user.id
-    with open('readme.txt', 'a+') as f:
+    with open('readme.txt', 'w') as f:
         f.write(str(take_id))
         f.writelines('\n')
-        a()
+    a()
 
 def recheck_game():
+    logging.info("Triggered RECHECK GAME.")
     time.sleep(10)
     a()
 
 #Function for send every week the notification
 def a():
+    logging.info("Triggered CHECK GAME.")
     #Read all id on readme.txt
     #schedule.every().thursday.do(freenow)
     schedule.every(10).seconds.do(freenow)
@@ -168,6 +183,7 @@ def a():
 
 
 def send_automatically1():
+    logging.info("Triggered AUTOMATICALLY SEND MESSAGE.")
     #Connect to the api
     url = "https://api.plenusbot.xyz/epic_games?country=IT"
     response = requests.get(url).json()
@@ -196,6 +212,10 @@ def send_automatically1():
             title_description_1 = current_games_title1 + "\n\n<b>About:</b>\n" + current_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate1 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate1 + "\n" + "\n<b>Price:</b>\n" + current_games_price1 + " → " + "Free" # Send title, description, start date and price first current game
             img_1 = bot.send_photo(a, current_games_images1) # Send image first current games
             send_message = bot.send_message(a, title_description_1, parse_mode="HTML") # Send all
+            
+            title_description_2 = current_games_title2 + "\n\n<b>About:</b>\n" + current_games_description2 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate2 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate2 + "\n" + "\n<b>Price:</b>\n" + current_games_price2 + " → " + "Free" # Send title, description, start date and price second current game
+            img_2 = bot.send_photo(a, current_games_images2) # Send image second current games
+            send_message = bot.send_message(a, title_description_2, parse_mode="HTML") # Send all
 
     #Update Collection with new game
     send_game1 = {"Game 1": current_games_title1}
