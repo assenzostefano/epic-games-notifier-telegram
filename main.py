@@ -145,10 +145,6 @@ def a():
     #Read all id on readme.txt
     #schedule.every().thursday.do(freenow)
     schedule.every(10).seconds.do(freenow)
-    with open("readme.txt",'r') as data_file:
-        for line in data_file:
-            data = line.split()
-            #print(data)
     
     #Check for new games
     url = "https://api.plenusbot.xyz/epic_games?country=IT"
@@ -162,6 +158,7 @@ def a():
     search_game1 = collection.find_one({"Game 1" : current_games_title1})
     if search_game1 is None:
         #Send notification if title game is changed
+        print("There is a new game!")
         print("Now I'm sending the notification to everyone.")
         send_automatically1()
     else:
@@ -191,13 +188,22 @@ def send_automatically1():
     current_games_endate2 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release second game
     current_games_price2 = response['currentGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice'] # Original price second game
 
-    #Send first and second message when the free game title change
-    title_description_1 = current_games_title1 + "\n\n<b>About:</b>\n" + current_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate1 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate1 + "\n" + "\n<b>Price:</b>\n" + current_games_price1 + " → " + "Free" # Send title, description, start date and price first current game
-    img_1 = bot.send_photo(chat_id, current_games_images1) # Send image first current games
-    send_message = bot.send_message(chat_id, title_description_1, parse_mode="HTML") # Send all
+    with open('readme.txt', 'r') as f:
+        for line in f:
+            y = line.split()
+            a = (', '.join(y))
+            #Send first and second message when the free game title change
+            title_description_1 = current_games_title1 + "\n\n<b>About:</b>\n" + current_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate1 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate1 + "\n" + "\n<b>Price:</b>\n" + current_games_price1 + " → " + "Free" # Send title, description, start date and price first current game
+            img_1 = bot.send_photo(a, current_games_images1) # Send image first current games
+            send_message = bot.send_message(a, title_description_1, parse_mode="HTML") # Send all
 
     #Update Collection with new game
     send_game1 = {"Game 1": current_games_title1}
-    senddata = collection.update_one({'_id':ObjectId("6319beba54b4d66a40e2d3eb")}, {"$set": send_game1}, upsert=False)
+    senddata = collection.update_one({'_id':ObjectId("")}, {"$set": send_game1}, upsert=False)
+
+    send_game2 = {"Game 2": current_games_title2}
+    senddata = collection.update_one({'_id':ObjectId("")}, {"$set": send_game2}, upsert=False)
+
+    recheck_game()
 
 bot.polling()
