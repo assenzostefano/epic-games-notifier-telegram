@@ -43,6 +43,12 @@ collection = database["epicgames-telegram"]
 
 logging.info("The bot started successfully.")
 
+#Create file for save id user
+with open('/app/data/readme.txt', 'w') as f:
+    f.close()
+
+bot.send_message("771375637", "Please write /start")
+
 #Command /start
 @bot.message_handler(commands=['start'])
 def start_command(message):
@@ -50,6 +56,7 @@ def start_command(message):
     logging.info("Triggered command START.")
     messageText = "✋ Welcome to <b>Epic Games Notifier</b>\n\n📱 You will be notified every week when there are new free games in the Epic Games Store. \n\n👨‍💻 Created and developed by @Stef58_Official"
     bot.send_message(chat_id, messageText, parse_mode="HTML")
+    recheck_game()
 
 #Command /comingsoon
 @bot.message_handler(commands=['comingsoon'])
@@ -161,7 +168,6 @@ def a():
     logging.info("Triggered CHECK GAME.")
     #Read all id on readme.txt
     #schedule.every().thursday.do(freenow)
-    schedule.every(10).seconds.do(freenow)
     
     #Check for new games
     url = "https://api.plenusbot.xyz/epic_games?country=IT"
@@ -226,6 +232,5 @@ def send_automatically1():
     send_game2 = {"Game 2": current_games_title2}
     senddata = collection.update_one({'_id':ObjectId("6319c0ac2ffd38ae32cd9ffa")}, {"$set": send_game2}, upsert=False)
 
-    recheck_game()
-
+schedule.every(10).seconds.do(recheck_game)
 bot.polling()
