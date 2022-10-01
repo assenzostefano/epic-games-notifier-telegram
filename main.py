@@ -21,6 +21,7 @@ from bson.objectid import ObjectId
 import time
 #Boh
 import sys
+import threading
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,7 +48,7 @@ logging.info("The bot started successfully.")
 with open('/app/data/readme.txt', 'w') as f:
     f.close()
 
-bot.send_message("771375637", "Please write /start")
+bot.send_message("771375637", "The bot was restarted")
 
 #Command /start
 @bot.message_handler(commands=['start'])
@@ -56,14 +57,12 @@ def start_command(message):
     logging.info("Triggered command START.")
     messageText = "✋ Welcome to <b>Epic Games Notifier</b>\n\n📱 You will be notified every week when there are new free games in the Epic Games Store. \n\n👨‍💻 Created and developed by @Stef58_Official"
     bot.send_message(chat_id, messageText, parse_mode="HTML")
-    recheck_game()
 
 #Command /comingsoon
 @bot.message_handler(commands=['comingsoon'])
 def comingsoon(message):
     logging.info("Triggered command COMING SOON.")
     chat_id = message.chat.id
-    logging.info("Triggered command COMING SOON")
     url = "https://api.plenusbot.xyz/epic_games?country=IT"
     response = requests.get(url).json()
     # Title of future games
@@ -141,7 +140,7 @@ def freenow(message):
         img_3 = bot.send_photo(message.chat.id, image_currentgames3) # Send image second current games
         send_message = bot.send_message(chat_id, title_description_3, parse_mode="HTML") # Send all    
     except IndexError:
-        print("No third game")
+        logging.info("No third game")
 
 #Command /subscribe
 @bot.message_handler(commands=['subscribe'])
@@ -156,19 +155,10 @@ def subscribe(message):
     with open('/app/data/readme.txt', 'w') as f:
         f.write(str(take_id))
         f.writelines('\n')
-    a()
-
-def recheck_game():
-    logging.info("Triggered RECHECK GAME.")
-    time.sleep(10)
-    a()
 
 #Function for send every week the notification
-def a():
+def check_game():
     logging.info("Triggered CHECK GAME.")
-    #Read all id on readme.txt
-    #schedule.every().thursday.do(freenow)
-    
     #Check for new games
     try:
         url = "https://api.plenusbot.xyz/epic_games?country=IT"
@@ -186,13 +176,14 @@ def a():
         else:
         #If new game is changed recheck every 10 second
             print("The game is not changed")
-            recheck_game()
+            print("Ok")
     except:
-        print("Ghe se un problema")
-    else:
-        recheck_game()
+        logging.info("An error has occurred")
 
-def send_automatically1():
+    else:
+        logging.info("An error has occurred")
+
+def send_automatically1(message):
     logging.info("Triggered AUTOMATICALLY SEND MESSAGE.")
     #Connect to the api
     try:
@@ -235,8 +226,18 @@ def send_automatically1():
         send_game2 = {"Game 2": current_games_title2}
         senddata = collection.update_one({'_id':ObjectId("6319c0ac2ffd38ae32cd9ffa")}, {"$set": send_game2}, upsert=False)
     except:
-        print("Ghe se un problema")
+        logging.info("An error has occurred")
     else:
-        recheck_game()
+        logging.info("An error has occurred")
+
+def check_game_threads():
+    t1 = threading.Thread(target=check_game)
+    t1.start()
+    t1.join()
+    print("Nice")
+
+job = schedule.every(10).seconds.do(check_game_threads).tag("check_game")
+schedule_check_game = schedule.get_jobs("check_game")
+print(schedule_check_game)
 
 bot.polling()
