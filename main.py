@@ -239,5 +239,4 @@ def send_automatically1():
     else:
         recheck_game()
 
-schedule.every(10).seconds.do(recheck_game)
 bot.polling()
