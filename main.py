@@ -21,6 +21,7 @@ from bson.objectid import ObjectId
 import time
 #Boh
 import sys
+import threading
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,20 +35,18 @@ load_dotenv()
 API_TOKEN = os.getenv('BOT_TOKEN')
 PASSWORD_MONGO = os.getenv('PASSWORD_MONGODB')
 URL_MONGO = os.getenv('URL_MONGODB')
+OBJECTID_game1 = os.getenv('OBJECTID_game1')
+OBJECTID_game2 = os.getenv('OBJECTID_game2')
+OBJECTID_idlist = os.getenv('OBJECTID_idlist')
 bot = telebot.TeleBot(API_TOKEN)
 
 mongo_url = "mongodb+srv://stefano:" + urllib.parse.quote_plus(PASSWORD_MONGO) + URL_MONGO
 client = pymongo.MongoClient(mongo_url)
-database = client["personal"]
-collection = database["epicgames-telegram"]
+database = client["epicgames-notifier"]
+collection_id = database["id-user"]
+collection_game = database["list-game"]
 
 logging.info("The bot started successfully.")
-
-#Create file for save id user
-with open('app/data/readme.txt', 'w') as f:
-    f.close()
-
-bot.send_message("771375637", "Please write /start")
 
 #Command /start
 @bot.message_handler(commands=['start'])
@@ -56,7 +55,6 @@ def start_command(message):
     logging.info("Triggered command START.")
     messageText = "✋ Welcome to <b>Epic Games Notifier</b>\n\n📱 You will be notified every week when there are new free games in the Epic Games Store. \n\n👨‍💻 Created and developed by @Stef58_Official"
     bot.send_message(chat_id, messageText, parse_mode="HTML")
-    recheck_game()
 
 #Command /comingsoon
 @bot.message_handler(commands=['comingsoon'])
@@ -87,7 +85,7 @@ def comingsoon(message):
         future_games_price3 = response['nextGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice']
         title_description_3 = future_games3 + "\n\n<b>About:</b>\n" + future_games_description3 + "\n" + "\n<b>Start Date:</b>\n" + future_games_startdate3 + "\n" + "\n<b>Price:</b>\n" + future_games_price3 + " → " + "Free" # Send title, description, start date and price second future game
         img_3 = bot.send_photo(message.chat.id, image_futuregames3) # Send image third future games
-        send_message = bot.send_message(chat_id, title_description_2, parse_mode="HTML") # Send all
+        send_message = bot.send_message(chat_id, title_description_3, parse_mode="HTML") # Send all
     except IndexError:
         print("No third game")
 
@@ -153,10 +151,12 @@ def subscribe(message):
     send_message = bot.send_message(chat_id, "✅ You have been successfully subscribed to Epic Games Store Free Games notifications!")
     #Get the ids of all users who write /subscribe
     take_id = message.from_user.id
-    with open('app/data/readme.txt', 'w') as f:
-        f.write(str(take_id))
-        f.writelines('\n')
-    a()
+    collection_id.update_one(
+        { "_id": ObjectId(OBJECTID_idlist)},
+            {
+                "$push": { "username": take_id }
+            }
+    )
 
 def recheck_game():
     logging.info("Triggered RECHECK GAME.")
@@ -178,7 +178,8 @@ def a():
         current_games_title2 = response['currentGames'][1]['title']
 
         #Check first game
-        search_game1 = collection.find_one({"Game 1" : current_games_title1})
+        search_game1 = collection_game.find_one({"Game 1" : current_games_title1})
+        print(search_game1)
         if search_game1 is None:
             #Send notification if title game is changed
             print("There is a new game!")
@@ -211,18 +212,22 @@ def send_automatically1():
         current_games_price1 = response['currentGames'][0]['price']['totalPrice']['fmtPrice']['originalPrice']
         current_games_images1 = response['currentGames'][0]['keyImages'][0]['url'] # First image current games
 
-        with open('app/data/readme.txt', 'r') as f:
-            for line in f:
-                y = line.split()
-                b = (', '.join(y))
-                #Send first and second message when the free game title change
-                title_description_1 = current_games_title1 + "\n\n<b>About:</b>\n" + current_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate1 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate1 + "\n" + "\n<b>Price:</b>\n" + current_games_price1 + " → " + "Free" # Send title, description, start date and price first current game
-                img_1 = bot.send_photo(b, current_games_images1) # Send image first current games
-                send_message = bot.send_message(b, title_description_1, parse_mode="HTML") # Send all
+        query = {"_id": ObjectId(OBJECTID_idlist)}
+        filter = {"_id": 0}
+        a = collection_id.find_one(query, filter)
+
+        #Get just the array
+        b = a["username"]
+        for i in b:
+            #Send first and second message when the free game title change
+            title_description_1 = current_games_title1 + "\n\n<b>About:</b>\n" + current_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate1 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate1 + "\n" + "\n<b>Price:</b>\n" + current_games_price1 + " → " + "Free" # Send title, description, start date and price first current game
+            img_1 = bot.send_photo(i, current_games_images1) # Send image first current games
+            send_message = bot.send_message(i, title_description_1, parse_mode="HTML") # Send all
             
         #Update Collection with new game
         send_game1 = {"Game 1": current_games_title1}
-        senddata = collection.update_one({'_id':ObjectId("6319beba54b4d66a40e2d3eb")}, {"$set": send_game1}, upsert=False)
+        x = collection_game.update_one({'_id':ObjectId(OBJECTID_game1)}, {"$set": send_game1}, upsert=False)
+        print("nice")
     except:
         print("An error occurred")
         recheck_game()
@@ -238,19 +243,26 @@ def send_automatically1():
             current_games_endate2 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release second game
             current_games_price2 = response['currentGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice'] # Original price second game
 
-            send_game2 = {"Game 2": current_games_title2}
-            senddata = collection.update_one({'_id':ObjectId("6319c0ac2ffd38ae32cd9ffa")}, {"$set": send_game2}, upsert=False)
+            query = {"_id": ObjectId(OBJECTID_idlist)}
+            filter = {"_id": 0}
+            a = collection_id.find_one(query, filter)
 
-            with open('app/data/readme.txt', 'r') as f:
-                for line in f:
-                    y = line.split()
-                    c = (', '.join(y))
-                    title_description_2 = current_games_title2 + "\n\n<b>About:</b>\n" + current_games_description2 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate2 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate2 + "\n" + "\n<b>Price:</b>\n" + current_games_price2 + " → " + "Free" # Send title, description, start date and price second current game
-                    img_2 = bot.send_photo(c, current_games_images2) # Send image second current games
-                    send_message = bot.send_message(c, title_description_2, parse_mode="HTML") # Send all
-                
+            #Get just the array
+            b = a["username"]
+            for i in b:
+                title_description_2 = current_games_title2 + "\n\n<b>About:</b>\n" + current_games_description2 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate2 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate2 + "\n" + "\n<b>Price:</b>\n" + current_games_price2 + " → " + "Free" # Send title, description, start date and price second current game
+                img_2 = bot.send_photo(i, current_games_images2) # Send image second current games
+                send_message = bot.send_message(i, title_description_2, parse_mode="HTML") # Send all
+            
+            #Update Collection with new game
+            send_game2 = {"Game 2": current_games_title2}
+            z = collection_game.update_one({'_id':ObjectId(OBJECTID_game2)}, {"$set": send_game2})
+
         except:
             print("An error occurred")
             recheck_game()
+
+t1 = threading.Thread(target=recheck_game, args=())
+t1.start()
 
 bot.polling()
