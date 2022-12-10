@@ -46,13 +46,12 @@ def notification_game2(collection_game, collection_id, bot, OBJECTID_idlist, OBJ
         current_games_endate2 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release second game
         current_games_price2 = response['currentGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice'] # Original price second game
 
-        query = {"_id": ObjectId(OBJECTID_idlist)}
+        query = {"_id": ObjectId(OBJECTID_idlist)} #Take ObjectID for search ID user
         filter = {"_id": 0}
-        a = collection_id.find_one(query, filter)
+        collection_find = collection_id.find_one(query, filter)
 
-        #Get just the array
-        b = a["username"]
-        for i in b:
+        array_username = collection_find["username"] #Get the array
+        for i in array_username:
             title_description_2 = current_games_title2 + "\n\n<b>About:</b>\n" + current_games_description2 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate2 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate2 + "\n" + "\n<b>Price:</b>\n" + current_games_price2 + " → " + "Free" # Send title, description, start date and price second current game
             img_2 = bot.send_photo(i, current_games_images2) # Send image second current games
             send_message = bot.send_message(i, title_description_2, parse_mode="HTML") # Send all

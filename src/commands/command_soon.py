@@ -1,34 +1,41 @@
 import requests
 
 def soon_command(message, bot):
-    chat_id = message.chat.id
+    chat_id = message.chat.id #Get chat id
     try:
-        url = "https://api.plenusbot.xyz/epic_games?country=IT"
-        response = requests.get(url).json()
-        # Title of future games
+        # Get data from API
+        url = "https://api.plenusbot.xyz/epic_games?country=IT" # URL API
+        response = requests.get(url).json() #API in JSON
+        
+        #Take data from API (Future Game 1)
         image_futuregames1 = response['nextGames'][0]['keyImages'][0]['url'] # First image future games
         future_games1 = response['nextGames'][0]['title'] # First title future games
         future_games_description1 = response['nextGames'][0]['description'] # First description future games
         future_games_startdate1 = response['nextGames'][0]['promotions']['upcomingPromotionalOffers'][0]['promotionalOffers'][0]['startDate']
         future_games_price1 = response['nextGames'][0]['price']['totalPrice']['fmtPrice']['originalPrice']
 
+        #Take data from API (Future Game 2)
         image_futuregames2 = response['nextGames'][1]['keyImages'][1]['url'] # Second image future games
         future_games2 = response['nextGames'][1]['title'] # Second title future games
         future_games_description2 = response['nextGames'][1]['description'] # Second description future games
         future_games_startdate2 = response['nextGames'][1]['promotions']['upcomingPromotionalOffers'][0]['promotionalOffers'][0]['startDate']
         future_games_price2 = response['nextGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice']
 
+        #Send notification to user (Future Game 1)
         title_description_1 = future_games1 + "\n\n<b>About:</b>\n" + future_games_description1 + "\n" + "\n<b>Start Date:</b>\n" + future_games_startdate1 + "\n" + "\n<b>Price:</b>\n" + future_games_price1 + " → " + "Free" # Send title, description, start date and price first future game
         img_1 = bot.send_photo(message.chat.id, image_futuregames1) # Send image first future games
         send_message = bot.send_message(chat_id, title_description_1, parse_mode="HTML") # Send all
 
+        #Send notification to user (Future Game 2)
         title_description_2 = future_games2 + "\n\n<b>About:</b>\n" + future_games_description2 + "\n" + "\n<b>Start Date:</b>\n" + future_games_startdate2 + "\n" + "\n<b>Price:</b>\n" + future_games_price2 + " → " + "Free" # Send title, description, start date and price second future game
         img_2 = bot.send_photo(message.chat.id, image_futuregames2) # Send image second future games
         send_message = bot.send_message(chat_id, title_description_2, parse_mode="HTML") # Send all
     except:
         bot.send_message(chat_id, "An error has occurred, probably new games have not been revealed or there are problems with the API. \nWe apologize for the inconvenience")
 
+    #Try search third game
     try:
+        #Take data from API (Future Game 3)
         image_futuregames3 = response['nextGames'][0]['keyImages'][2]['url'] # Third image future games
         future_games3 = response['nextGames'][2]['title'] # Third title future games
         future_games_description3 = response['nextGames'][2]['description'] # Third description future games
