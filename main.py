@@ -44,7 +44,7 @@ def freegame_command(message, bot=bot):
 #Command /subscribe
 @bot.message_handler(commands=['subscribe'])
 def subscribe(message, bot=bot, collection_game=collection_game, OBJECTID_idlist=OBJECTID_idlist):
-    command_subscribe.subscribe_command(message, bot, collection_game)
+    command_subscribe.subscribe_command(message, bot, collection_game, OBJECTID_idlist)
 
 def event_game(collection_game=collection_game, collection_id=collection_id, bot=bot, OBJECTID_idlist=OBJECTID_idlist, OBJECTID_game1=OBJECTID_game1, OBJECTID_game2=OBJECTID_game2):
     check_game.a(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2)
