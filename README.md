@@ -5,7 +5,7 @@
 
 # To Do
 - [ ] Write documentation
-- [ ] When the bot restarts automatically it starts looking for games again.
+- [X] When the bot restarts automatically it starts looking for games again.
 - [ ] Create logo
 
 # Installation
