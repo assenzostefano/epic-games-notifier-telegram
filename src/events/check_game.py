@@ -3,12 +3,12 @@ import requests
 import time
 
 #Function that waits 10 seconds before trying again
-def recheck_game(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2):
+def recheck_game(collection_game, collection_id, bot):
     time.sleep(10)
-    a(collection_game=collection_game, collection_id=collection_id, bot=bot, OBJECTID_idlist=OBJECTID_idlist, OBJECTID_game1=OBJECTID_game1, OBJECTID_game2=OBJECTID_game2)
+    a(collection_game=collection_game, collection_id=collection_id, bot=bot)
 
 #Function for check new games, if there are a new game, send notification
-def a(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2):
+def a(collection_game, collection_id, bot):
     try:
         #Connect to API
         url = "https://api.plenusbot.xyz/epic_games?country=IT" #URL API
@@ -25,18 +25,18 @@ def a(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJE
             #Send notification if title game is changed
             print("Found a new 1 game!")
             print("Now I'm sending the notification to everyone.")
-            notification_game.notification_game1(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1)
+            notification_game.notification_game1(collection_game, collection_id, bot)
         if search_game2 is None: #If game2 is not in MongoDB send notification
             #Send notification if title game is changed
             print("Found a new 2 game!")
             print("Now I'm sending the notification to everyone.")
-            notification_game.notification_game2(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2)
+            notification_game.notification_game2(collection_game, collection_id, bot)
         else:
             #If new game is not changed recheck every 10 second
             print("The game is not changed")
-            recheck_game(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2)
+            recheck_game(collection_game, collection_id, bot)
     except:
         print("An error occurred")
-        recheck_game(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2)
+        recheck_game(collection_game, collection_id, bot)
     else:
-        recheck_game(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2)
+        recheck_game(collection_game, collection_id, bot)

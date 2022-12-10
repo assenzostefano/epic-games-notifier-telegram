@@ -13,9 +13,6 @@ load_dotenv() #Load .env file
 API_TOKEN = os.getenv('BOT_TOKEN') #Token for Telegram bot
 PASSWORD_MONGO = os.getenv('PASSWORD_MONGODB') #Password for MongoDB
 URL_MONGO = os.getenv('URL_MONGODB') #URL for MongoDB
-OBJECTID_game1 = os.getenv('OBJECTID_game1') #ObjectID for game1 in MongoDB
-OBJECTID_game2 = os.getenv('OBJECTID_game2') #ObjectID for game2 in MongoDB
-OBJECTID_idlist = os.getenv('OBJECTID_idlist') #ObjectID for idlist in MongoDB
 
 #Connect to MongoDB
 mongo_url = "mongodb+srv://stefano:" + urllib.parse.quote_plus(PASSWORD_MONGO) + URL_MONGO #URL for MongoDB (with password)
@@ -43,11 +40,11 @@ def freegame_command(message, bot=bot):
 
 #Command /subscribe
 @bot.message_handler(commands=['subscribe'])
-def subscribe(message, bot=bot, collection_game=collection_game, OBJECTID_idlist=OBJECTID_idlist):
-    command_subscribe.subscribe_command(message, bot, collection_game, OBJECTID_idlist)
+def subscribe(message, bot=bot, collection_game=collection_game):
+    command_subscribe.subscribe_command(message, bot, collection_game)
 
-def event_game(collection_game=collection_game, collection_id=collection_id, bot=bot, OBJECTID_idlist=OBJECTID_idlist, OBJECTID_game1=OBJECTID_game1, OBJECTID_game2=OBJECTID_game2):
-    check_game.a(collection_game, collection_id, bot, OBJECTID_idlist, OBJECTID_game1, OBJECTID_game2)
+def event_game(collection_game=collection_game, collection_id=collection_id, bot=bot):
+    check_game.a(collection_game, collection_id, bot)
 
 #Threading for check game every 5 seconds
 t1 = threading.Thread(target=event_game, args=())
