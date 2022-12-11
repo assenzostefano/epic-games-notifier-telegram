@@ -1,12 +1,13 @@
 import requests
 import os
 from bson.objectid import ObjectId
-url = "https://api.plenusbot.xyz/epic_games?country=IT"
-response = requests.get(url).json()
 
 def notification_game1(collection_game, collection_id, bot):
     try:
         print("Try to send first game")
+
+        url = "https://api.plenusbot.xyz/epic_games?country=IT"
+        response = requests.get(url).json()
 
         #All information for first game
         current_games_title1 = response['currentGames'][0]['title'] # First title current games
