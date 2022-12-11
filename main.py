@@ -11,15 +11,19 @@ import threading #Library for threading (ex. Check game every 10 seconds)
 #Load all variables from .env file
 load_dotenv() #Load .env file
 API_TOKEN = os.getenv('BOT_TOKEN') #Token for Telegram bot
+USER_MONGO = os.getenv('USER_MONGODB') #User for MongoDB
 PASSWORD_MONGO = os.getenv('PASSWORD_MONGODB') #Password for MongoDB
 URL_MONGO = os.getenv('URL_MONGODB') #URL for MongoDB
+DATABASE = os.getenv('DATABASE') #Database name
+COLLECTION_ID_USER = os.getenv('COLLECTION_ID-USER') #Collection name (id-user)
+COLLECTION_LIST_GAME = os.getenv('COLLECTION_LIST-GAME') #Collection name (list-game)
 
 #Connect to MongoDB
-mongo_url = "mongodb+srv://stefano:" + urllib.parse.quote_plus(PASSWORD_MONGO) + URL_MONGO #URL for MongoDB (with password)
+mongo_url = "mongodb+srv://"+USER_MONGO+":" + urllib.parse.quote_plus(PASSWORD_MONGO) + URL_MONGO #URL for MongoDB (with password)
 client = pymongo.MongoClient(mongo_url) #Connect to MongoDB
-database = client["epicgames-notifier"] #Database name
-collection_id = database["id-user"] #Collection name (id-user)
-collection_game = database["list-game"] #Collection name (list-game)
+database = client[DATABASE] #Database name
+collection_id = database[COLLECTION_ID_USER] #Collection name (id-user)
+collection_game = database[COLLECTION_LIST_GAME] #Collection name (list-game)
 
 bot = telebot.TeleBot(API_TOKEN) #Connect to Telegram API
 
