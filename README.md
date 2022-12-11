@@ -4,7 +4,6 @@
 - Find it on Telegram as [Telegram bot](https://t.me/EpicNotifier_bot)
 
 # To Do
-- [ ] Write documentation
 - [X] When the bot restarts automatically it starts looking for games again.
 - [X] Create logo
 
