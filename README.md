@@ -8,7 +8,7 @@
 - [X] When the bot restarts automatically it starts looking for games again.
 - [X] Create logo
 
-# Installation
+# Installation (normal)
 
 - Install libraries
 
