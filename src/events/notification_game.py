@@ -61,3 +61,30 @@ def notification_game2(collection_game, collection_id, bot,):
     except:
         print("An error occurred")
         recheck_game(collection_game=collection_game, collection_id=collection_id, bot=bot)
+
+def notification_game3(collection_game, collection_id, bot,):
+    try:
+        print("Try to send third game")
+        #All information for second game
+        current_games_title3 = response['currentGames'][1]['title'] # Third title current game
+        current_games_images3 = response['currentGames'][1]['keyImages'][0]['url'] # Third image current game
+        current_games_description3 = response['currentGames'][1]['description'] # Third description current game
+        current_games_startdate3 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['startDate'] #Public release Third game
+        current_games_endate3 = response['currentGames'][1]['promotions']['promotionalOffers'][0]['promotionalOffers'][0]['endDate'] # End public release Third game
+        current_games_price3 = response['currentGames'][1]['price']['totalPrice']['fmtPrice']['originalPrice'] # Original price Third game
+
+        collection_find_username = list(collection_id.find({}, {"username": 1,})) #Find all username in collection
+        array_username = list(collection_find_username[1]['username']) #Get the array
+        for i in array_username:
+            title_description_3 = current_games_title3 + "\n\n<b>About:</b>\n" + current_games_description3 + "\n" + "\n<b>Start Date:</b>\n" + current_games_startdate3 + "\n" + "\n<b>End Date:</b>\n" + current_games_endate3 + "\n" + "\n<b>Price:</b>\n" + current_games_price3 + " → " + "Free" # Send title, description, start date and price Third current game
+            img_3 = bot.send_photo(i, current_games_images3) # Send image Third current games
+            send_message = bot.send_message(i, title_description_3, parse_mode="HTML") # Send all
+            
+        #Update Collection with new game
+        send_game3 = {"Game 3": current_games_title3}
+        find_document_game3 = list(collection_game.find({}, {"_id": 1}))
+        array_game3 = find_document_game3[2]["_id"]
+        sendata2 = collection_game.update_one({'_id':ObjectId(array_game3)}, {"$set": send_game3}, upsert=False)
+    except:
+        print("An error occurred")
+        recheck_game(collection_game=collection_game, collection_id=collection_id, bot=bot)
