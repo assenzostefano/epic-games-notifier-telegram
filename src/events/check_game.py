@@ -11,12 +11,12 @@ def recheck_game(collection_game, collection_id, bot):
 def a(collection_game, collection_id, bot):
     try:
         #Connect to API
-        url = "https://api.plenusbot.xyz/epic_games?country=IT" #URL API
+        url = "https://minty.apexie.eu/v1/epicfreegames" #URL API
         response = requests.get(url).json() #API in JSON
 
         # Title of current games
         try:
-            current_games_title1 = response['currentGames'][0]['title'] #Title of first game
+            current_games_title1 = response['games'][0]['title'] #Title of first game
             search_game1 = collection_game.find_one({"Game 1": current_games_title1}) #Search game1 in MongoDB
 
             if search_game1 is None: #If game1 is not in MongoDB send notification
@@ -31,7 +31,7 @@ def a(collection_game, collection_id, bot):
             #recheck_game(collection_game, collection_id, bot)
 
         try:
-            current_games_title2 = response['currentGames'][1]['title'] #Title of second game
+            current_games_title2 = response['games'][1]['title'] #Title of second game
             search_game2 = collection_game.find_one({"Game 2" : current_games_title2}) #Search game2 in MongoDB
             if search_game2 is None: #If game2 is not in MongoDB send notification
                 #Send notification if title game is changed
@@ -43,7 +43,7 @@ def a(collection_game, collection_id, bot):
             #recheck_game(collection_game, collection_id, bot)
         
         try:
-            current_games_title3 = response['currentGames'][2]['title']
+            current_games_title3 = response['games'][2]['title']
             search_game3 = collection_game.find_one({"Game 3" : current_games_title3})
             if search_game3 is None: #If game2 is not in MongoDB send notification
                 #Send notification if title game is changed
