@@ -4,7 +4,7 @@ def freegame_command(message, bot):
     chat_id = message.chat.id #Get chat id
     #Connect to API
     try:
-        url = "https://api.plenusbot.xyz/epic_games?country=IT" #URL API
+        url = "https://minty.apexie.dev/v1/epicfreegames" #URL API
         response = requests.get(url).json() #API in JSON
         #Take data from API (Current Game 1)
         image_currentgames1 = response['games'][0]['mainImage'] # First image current games
