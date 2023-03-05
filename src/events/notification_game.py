@@ -6,7 +6,7 @@ def notification_game1(collection_game, collection_id, bot):
     try:
         print("Try to send first game")
 
-        url = "https://minty.apexie.eu/v1/epicfreegames"
+        url = "https://minty.apexie.dev/v1/epicfreegames"
         response = requests.get(url).json()
 
         #All information for first game
