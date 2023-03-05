@@ -4,7 +4,7 @@ def soon_command(message, bot):
     chat_id = message.chat.id #Get chat id
     try:
         # Get data from API
-        url = "https://api.plenusbot.xyz/epic_games?country=IT" # URL API
+        url = "https://minty.apexie.dev/v1/epicfreegames" # URL API
         response = requests.get(url).json() #API in JSON
         
         #Take data from API (Future Game 1)
