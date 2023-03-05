@@ -11,7 +11,7 @@ def recheck_game(collection_game, collection_id, bot):
 def a(collection_game, collection_id, bot):
     try:
         #Connect to API
-        url = "https://minty.apexie.eu/v1/epicfreegames" #URL API
+        url = "https://minty.apexie.dev/v1/epicfreegames" #URL API
         response = requests.get(url).json() #API in JSON
 
         # Title of current games
