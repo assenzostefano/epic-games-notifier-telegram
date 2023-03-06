@@ -1,5 +1,6 @@
 from src.commands import command_soon, command_subscribe, command_start, command_freegame #All commands of the bot are in the folder src.commands
 from src.events import check_game #All events of the bot are in the folder src.events (ex. check_game = check when Epic Games change the game)
+from flask import Flask
 from bson.objectid import ObjectId #Library for MongoDB (read ObjectId)
 from dotenv import load_dotenv #Library for .env file
 from telebot import telebot #Libraries for Telegram bot
@@ -10,6 +11,7 @@ import threading #Library for threading (ex. Check game every 10 seconds)
 
 #Load all variables from .env file
 load_dotenv() #Load .env file
+app = Flask(__name__)
 API_TOKEN = os.getenv('BOT_TOKEN') #Token for Telegram bot
 USER_MONGO = os.getenv('USER_MONGODB') #User for MongoDB
 PASSWORD_MONGO = os.getenv('PASSWORD_MONGODB') #Password for MongoDB
@@ -23,6 +25,10 @@ collection_id = database["id-user"] #Collection name (id-user)
 collection_game = database["list-game"] #Collection name (list-game)
 
 bot = telebot.TeleBot(API_TOKEN) #Connect to Telegram API
+
+@app.route('/')
+def homepage():
+    return 'Hello'
 
 #Command /start
 @bot.message_handler(commands=['start'])
@@ -51,4 +57,6 @@ def event_game(collection_game=collection_game, collection_id=collection_id, bot
 t1 = threading.Thread(target=event_game, args=())
 t1.start()
 
-bot.polling()
+if __name__ == '__main__':
+    app.run(port=8080)
+    bot.polling()
